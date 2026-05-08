@@ -1,3 +1,13 @@
+---
+title: Mental Health Discourse Analyzer
+emoji: "\U0001F9E0"
+colorFrom: indigo
+colorTo: blue
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # Mental Health Discourse Analyzer
 
 End-to-end NLP pipeline that classifies the distress severity of a

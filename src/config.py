@@ -1,4 +1,5 @@
 """Central config: paths, labels, hyperparameters."""
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -14,8 +15,19 @@ TRAIN_CSV = DATA_DIR / "train.csv"
 VAL_CSV = DATA_DIR / "val.csv"
 TEST_CSV = DATA_DIR / "test.csv"
 
+# Local paths (where training writes artifacts).
 CLASSIFIER_DIR = MODELS_DIR / "roberta_distress"
 TOPIC_MODEL_DIR = MODELS_DIR / "bertopic"
+
+# Where inference loads models from. Defaults point at HF Hub so the
+# deployed Space can pull weights at boot. Override via env var to
+# serve a local checkpoint (e.g., during dev: CLASSIFIER_MODEL=models/roberta_distress).
+HF_USERNAME = "NehaS98"
+CLASSIFIER_REPO = f"{HF_USERNAME}/mh-roberta-distress"
+TOPIC_REPO = f"{HF_USERNAME}/mh-bertopic"
+
+CLASSIFIER_MODEL = os.environ.get("CLASSIFIER_MODEL", CLASSIFIER_REPO)
+TOPIC_MODEL = os.environ.get("TOPIC_MODEL", TOPIC_REPO)
 
 # Severity taxonomy mapped to mental-health subreddits available in the
 # public corpus we use (solomonk/reddit_mental_health_posts: adhd,

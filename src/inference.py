@@ -27,8 +27,12 @@ class Prediction:
 
 @lru_cache(maxsize=1)
 def _load_classifier():
-    tok = AutoTokenizer.from_pretrained(str(config.CLASSIFIER_DIR))
-    model = AutoModelForSequenceClassification.from_pretrained(str(config.CLASSIFIER_DIR))
+    # config.CLASSIFIER_MODEL is either a local path or a HF Hub repo ID;
+    # from_pretrained handles both.
+    src = config.CLASSIFIER_MODEL
+    print(f"[inference] loading classifier from {src}")
+    tok = AutoTokenizer.from_pretrained(src)
+    model = AutoModelForSequenceClassification.from_pretrained(src)
     model.eval()
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model.to(device)
@@ -39,9 +43,9 @@ def _load_classifier():
 def _load_topic_model():
     try:
         from bertopic import BERTopic
-        if not config.TOPIC_MODEL_DIR.exists():
-            return None
-        return BERTopic.load(str(config.TOPIC_MODEL_DIR))
+        src = config.TOPIC_MODEL
+        print(f"[inference] loading topic model from {src}")
+        return BERTopic.load(src)
     except Exception as e:
         print(f"[inference] topic model unavailable: {e}")
         return None
