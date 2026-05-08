@@ -1,0 +1,5 @@
+# Force Unix line endings for shell scripts so Docker (Linux) can run them.
+*.sh text eol=lf
+
+# Same for Dockerfile, just to be safe.
+Dockerfile text eol=lf
