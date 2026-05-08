@@ -7,8 +7,9 @@ DATA_DIR = ROOT / "data"
 MODELS_DIR = ROOT / "models"
 MLRUNS_DIR = ROOT / "mlruns"
 
-DATA_DIR.mkdir(exist_ok=True)
-MODELS_DIR.mkdir(exist_ok=True)
+# NOTE: We deliberately do NOT mkdir here. Module import should be
+# side-effect-free. Inference (the deployed Space) doesn't need these
+# dirs at all; training scripts create them explicitly.
 
 RAW_CSV = DATA_DIR / "reddit_mh_raw.csv"
 TRAIN_CSV = DATA_DIR / "train.csv"

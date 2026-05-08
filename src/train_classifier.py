@@ -86,6 +86,7 @@ def compute_metrics(eval_pred):
 
 
 def main():
+    config.MODELS_DIR.mkdir(exist_ok=True)
     train_df, val_df, test_df = load_splits()
     print(f"[train] sizes: train={len(train_df)} val={len(val_df)} test={len(test_df)}")
 

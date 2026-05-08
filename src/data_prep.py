@@ -139,6 +139,7 @@ def make_synthetic(n_per_class: int = 200) -> pd.DataFrame:
 
 
 def main(use_synthetic: bool = False, max_rows: int | None = None) -> None:
+    config.DATA_DIR.mkdir(exist_ok=True)
     if use_synthetic:
         print("[data] using synthetic dataset")
         raw = make_synthetic()
