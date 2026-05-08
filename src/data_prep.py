@@ -138,7 +138,7 @@ def make_synthetic(n_per_class: int = 200) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def main(use_synthetic: bool = False) -> None:
+def main(use_synthetic: bool = False, max_rows: int | None = None) -> None:
     if use_synthetic:
         print("[data] using synthetic dataset")
         raw = make_synthetic()
@@ -158,6 +158,16 @@ def main(use_synthetic: bool = False) -> None:
 
     raw = filter_quality(raw)
     print(f"[data] after quality filter: {len(raw)} rows")
+
+    if max_rows is not None and len(raw) > max_rows:
+        # Stratified subsample so each class shrinks proportionally.
+        raw, _ = train_test_split(
+            raw, train_size=max_rows, stratify=raw["severity"],
+            random_state=config.SEED,
+        )
+        raw = raw.reset_index(drop=True)
+        print(f"[data] subsampled to {len(raw)} rows (stratified)")
+
     print("[data] severity distribution:")
     print(raw["severity"].value_counts().sort_index().to_string())
 
@@ -172,5 +182,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--synthetic", action="store_true",
                         help="Use a small synthetic dataset (offline smoke test)")
+    parser.add_argument("--max-rows", type=int, default=None,
+                        help="Stratified subsample to this many rows total before split")
     args = parser.parse_args()
-    sys.exit(main(use_synthetic=args.synthetic))
+    sys.exit(main(use_synthetic=args.synthetic, max_rows=args.max_rows))

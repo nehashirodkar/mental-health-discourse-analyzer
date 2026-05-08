@@ -3,8 +3,8 @@
 End-to-end NLP pipeline that classifies the distress severity of a
 Reddit-style post and surfaces the discourse themes it belongs to.
 
-- **Classifier:** fine-tuned `roberta-base` (4-class severity: none /
-  mild / moderate / severe), weighted CrossEntropy loss for class imbalance.
+- **Classifier:** fine-tuned `roberta-base` (3-class severity: mild /
+  moderate / severe), weighted CrossEntropy loss for class imbalance.
 - **Theme extraction:** BERTopic (MiniLM embeddings → UMAP → HDBSCAN
   → c-TF-IDF) over the same corpus.
 - **Serving:** FastAPI `/predict` endpoint with confidence scores +
@@ -94,8 +94,11 @@ dashboard/app.py         Streamlit dashboard
 ## Design notes
 
 - **Weak supervision via subreddit** — there is no public Reddit dataset
-  pre-labeled with distress severity. We map subreddits to a 4-level
-  scale (`SUBREDDIT_TO_SEVERITY` in `src/config.py`). The labels are
+  pre-labeled with distress severity. We use the
+  `solomonk/reddit_mental_health_posts` corpus (adhd, aspergers,
+  depression, ocd, ptsd) and map each subreddit to a 3-level distress
+  scale (`SUBREDDIT_TO_SEVERITY` in `src/config.py`): adhd/aspergers ->
+  mild, depression/ocd -> moderate, ptsd -> severe. The labels are
   noisy, but the classifier learns to generalize from text content
   rather than memorizing subreddit-name cues (which it never sees).
 - **Class imbalance handling** — `compute_class_weight(class_weight="balanced")`

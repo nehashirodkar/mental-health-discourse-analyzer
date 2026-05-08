@@ -17,22 +17,23 @@ TEST_CSV = DATA_DIR / "test.csv"
 CLASSIFIER_DIR = MODELS_DIR / "roberta_distress"
 TOPIC_MODEL_DIR = MODELS_DIR / "bertopic"
 
-# Severity taxonomy. Subreddits map onto these four levels.
-# 0 = none/casual, 1 = mild, 2 = moderate, 3 = severe (crisis)
-LABELS = ["none", "mild", "moderate", "severe"]
+# Severity taxonomy mapped to mental-health subreddits available in the
+# public corpus we use (solomonk/reddit_mental_health_posts: adhd,
+# aspergers, depression, ocd, ptsd). We pivoted from a 4-class scheme
+# (none/mild/moderate/severe) to 3 classes after observing the corpus
+# does not include casual / non-MH subreddits — labeling 'none' would
+# require a separate data source.
+# 0 = mild, 1 = moderate, 2 = severe
+LABELS = ["mild", "moderate", "severe"]
 LABEL2ID = {l: i for i, l in enumerate(LABELS)}
 ID2LABEL = {i: l for i, l in enumerate(LABELS)}
 
 SUBREDDIT_TO_SEVERITY = {
-    "casualconversation": 0,
-    "offmychest": 1,
-    "anxiety": 1,
-    "mentalhealth": 1,
-    "depression": 2,
+    "adhd": 0,
+    "aspergers": 0,
+    "depression": 1,
+    "ocd": 1,
     "ptsd": 2,
-    "bpd": 2,
-    "selfharm": 3,
-    "suicidewatch": 3,
 }
 
 # RoBERTa fine-tune
