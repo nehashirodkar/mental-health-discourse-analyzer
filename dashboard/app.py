@@ -116,7 +116,23 @@ with tab_predict:
 
 with tab_themes:
     st.subheader("Discovered themes (BERTopic)")
-    if TOPIC_KEYWORDS.exists():
+    try:
+        r = requests.get(f"{API_URL}/topics", timeout=10)
+        r.raise_for_status()
+        topics = r.json().get("topics", [])
+    except Exception as e:
+        st.warning(f"Could not load topics from API: {e}")
+        topics = []
+
+    if topics:
+        rows = [
+            {"topic_id": t["topic_id"], "count": t["count"],
+             "keywords": ", ".join(t["keywords"])}
+            for t in topics
+        ]
+        st.dataframe(pd.DataFrame(rows), hide_index=True, use_container_width=True)
+    elif TOPIC_KEYWORDS.exists():
+        # Local-dev fallback when running without the API.
         kw = json.loads(TOPIC_KEYWORDS.read_text())
         rows = [
             {"topic_id": int(tid), "keywords": ", ".join(words)}
@@ -124,4 +140,4 @@ with tab_themes:
         ]
         st.dataframe(pd.DataFrame(rows), hide_index=True, use_container_width=True)
     else:
-        st.info("No topic model trained yet. Run `python -m src.topic_model`.")
+        st.info("No topics available yet.")

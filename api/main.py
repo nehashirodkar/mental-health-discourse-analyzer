@@ -89,6 +89,28 @@ def predict_batch(req: BatchRequest):
     return [PredictResponse(**inference.predict(t).__dict__) for t in req.texts]
 
 
+@app.get("/topics")
+def topics(top_k: int = 10):
+    """Return discovered BERTopic clusters with their top-k keywords."""
+    if not _models_ready:
+        raise HTTPException(503, "Models still loading; try again shortly.")
+    tm = inference._load_topic_model()
+    if tm is None:
+        return {"topics": []}
+    info = tm.get_topic_info()
+    out = []
+    for tid in info["Topic"].tolist():
+        if tid == -1:
+            continue
+        words = tm.get_topic(int(tid)) or []
+        out.append({
+            "topic_id": int(tid),
+            "count": int(info.loc[info["Topic"] == tid, "Count"].iloc[0]),
+            "keywords": [w for w, _ in words[:top_k]],
+        })
+    return {"topics": out}
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("api.main:app", host=config.API_HOST, port=config.API_PORT, reload=False)
