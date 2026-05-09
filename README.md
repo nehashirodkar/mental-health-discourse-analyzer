@@ -10,8 +10,15 @@ pinned: false
 
 # Mental Health Discourse Analyzer
 
+> **Live demo:** [huggingface.co/spaces/NehaS98/mental-health-discourse-analyzer](https://huggingface.co/spaces/NehaS98/mental-health-discourse-analyzer)
+> **Models:** [classifier](https://huggingface.co/NehaS98/mh-roberta-distress) · [topic model](https://huggingface.co/NehaS98/mh-bertopic)
+
 End-to-end NLP pipeline that classifies the distress severity of a
 Reddit-style post and surfaces the discourse themes it belongs to.
+
+**Held-out test performance** (real Reddit MH corpus, 7.8k posts):
+accuracy **0.91**, macro F1 **0.90**, severe-class F1 **0.86** despite
+3:1 class imbalance.
 
 - **Classifier:** fine-tuned `roberta-base` (3-class severity: mild /
   moderate / severe), weighted CrossEntropy loss for class imbalance.
