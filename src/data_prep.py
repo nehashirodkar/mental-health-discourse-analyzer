@@ -1,10 +1,11 @@
 """Load Reddit mental-health posts, derive severity labels, split.
 
-Strategy: each post's subreddit is the weak label source. Posts in
-r/SuicideWatch get severity=3; r/CasualConversation gets 0; etc. This is
-imperfect (a casual venting post can land in r/depression) but is a
-defensible proxy for a portfolio project — and the classifier learns to
-generalize from text content, not subreddit names.
+Strategy: each post's subreddit is the weak label source. The 3-level
+severity scale in config.SUBREDDIT_TO_SEVERITY maps adhd/aspergers ->
+mild, depression/ocd -> moderate, ptsd -> severe. This is imperfect (a
+calm, reflective post can still land in r/ptsd) but is a defensible
+proxy for a portfolio project — and the classifier learns to generalize
+from text content, not subreddit names.
 """
 from __future__ import annotations
 
@@ -107,27 +108,38 @@ def stratified_split(df: pd.DataFrame, seed: int = config.SEED):
 
 
 def make_synthetic(n_per_class: int = 200) -> pd.DataFrame:
-    """Tiny synthetic dataset for smoke-testing the pipeline offline."""
+    """Tiny synthetic dataset for smoke-testing the pipeline offline.
+
+    Subreddits here must exist in config.SUBREDDIT_TO_SEVERITY, otherwise
+    assign_severity() would drop every synthetic row. They cover all
+    three severity tiers: adhd/aspergers -> mild, depression/ocd ->
+    moderate, ptsd -> severe.
+    """
     samples = {
-        "casualconversation": [
-            "Just had a great cup of coffee this morning, life is good",
-            "Anyone else watching the new season? It is amazing so far",
-            "Got a new puppy yesterday and I am so happy",
+        "adhd": [
+            "I started five different tasks today and finished none of them",
+            "Lost my keys again and missed another deadline I forgot about",
+            "Reading the same paragraph over and over and it will not stick",
         ],
-        "anxiety": [
-            "My heart races every time I think about the meeting tomorrow",
-            "I cannot stop worrying about everything that could go wrong",
-            "The panic attacks have been coming back this week",
+        "aspergers": [
+            "Group conversations move too fast for me to find a way in",
+            "The noise in the office was overwhelming and I had to step out",
+            "I rehearsed the small talk but it still did not come out right",
         ],
         "depression": [
             "I have not been able to get out of bed for three days now",
             "Nothing brings me joy anymore, I feel completely empty inside",
             "Everything feels gray and pointless, even things I used to love",
         ],
-        "suicidewatch": [
-            "I do not want to be here anymore, the pain never stops",
-            "I have been thinking about ending it all every single day",
-            "I feel like the world would be better off without me",
+        "ocd": [
+            "I checked the front door lock eleven times before I could leave",
+            "The intrusive thoughts keep looping and I cannot make them stop",
+            "I washed my hands until they were raw before I felt okay",
+        ],
+        "ptsd": [
+            "A car backfired and I was instantly back in that moment, shaking",
+            "The nightmares wake me every night and I dread falling asleep",
+            "A certain smell sent me into a flashback for the whole afternoon",
         ],
     }
     rows = []

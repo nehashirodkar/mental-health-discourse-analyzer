@@ -19,3 +19,5 @@ mlruns/
 .idea/
 .vscode/
 *.log
+
+.claude/
